@@ -43,6 +43,8 @@ describe('Primeiro Container de Teste', () => {
     await redisClient.quit();
     // Para o container
     await container.stop();
+    //Para debugging, usar a variável de ambiente TESTCONTAINERS_RYUK_DISABLED=true
+    //await container.stop({ remove: false });
     
     console.log(`\n⏱️  Teardown completo em: ${(performance.now() - startTime).toFixed(2)}ms`);
   });

@@ -39,6 +39,8 @@ test("deve armazenar e recuperar dados do Redis usando Testcontainers", async ()
   const cleanupStart = performance.now();
   // Para o container e remove o container
   await container.stop();
+  //Para debugging, usar a variável de ambiente TESTCONTAINERS_RYUK_DISABLED=true
+  //await container.stop({ remove: false });
   console.log(
     `⏱️  Cleanup completo em: ${(performance.now() - cleanupStart).toFixed(
       2
