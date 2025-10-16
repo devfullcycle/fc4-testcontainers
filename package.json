@@ -12,6 +12,8 @@
   "type": "module",
   "dependencies": {
     "@types/node": "^24.7.2",
+    "@types/pg": "^8.15.5",
+    "pg": "^8.16.3",
     "redis": "^5.8.3",
     "testcontainers": "^11.7.1",
     "typescript": "^5.9.3",
