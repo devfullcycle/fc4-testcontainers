@@ -1,0 +1,24 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPath": "/api/users"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "users": [
+                {
+                    "id": 1,
+                    "name": "Alice"
+                },
+                {
+                    "id": 2,
+                    "name": "Bob"
+                }
+            ]
+        }
+    }
+}
