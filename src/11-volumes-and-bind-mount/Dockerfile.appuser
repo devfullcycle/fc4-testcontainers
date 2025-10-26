@@ -1,0 +1,11 @@
+FROM alpine:3.19
+
+# Criar usuário não-root com UID/GID 1000 para corresponder ao usuário do host
+RUN addgroup -g 1000 appuser && \
+    adduser -u 1000 -G appuser -D appuser
+
+# Definir como usuário padrão
+USER appuser
+
+# Comando padrão
+CMD ["/bin/sh"]
