@@ -1,0 +1,4 @@
+FROM rabbitmq:3-management-alpine
+
+# Habilita o plugin de streams
+RUN rabbitmq-plugins enable --offline rabbitmq_stream
