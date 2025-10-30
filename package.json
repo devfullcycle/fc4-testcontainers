@@ -13,11 +13,14 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.913.0",
     "@aws-sdk/lib-storage": "^3.913.0",
+    "@playwright/test": "^1.56.1",
     "@testcontainers/localstack": "^11.7.1",
     "@testcontainers/postgresql": "^11.7.1",
+    "@testcontainers/redis": "^11.7.2",
     "@types/node": "^24.7.2",
     "@types/pg": "^8.15.5",
     "@wiremock/wiremock-testcontainers-node": "^0.0.1",
+    "amqplib": "^0.10.9",
     "axios": "^1.12.2",
     "pg": "^8.16.3",
     "redis": "^5.8.3",
@@ -26,5 +29,8 @@
     "testcontainers-node-playwright": "^0.5.5",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.8"
   }
 }
