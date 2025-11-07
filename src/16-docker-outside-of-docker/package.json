@@ -1,0 +1,27 @@
+{
+  "name": "testcontainers-devcontainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "test:without-compose": "vitest src/without-compose",
+    "test:with-compose": "vitest src/with-compose"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@testcontainers/postgresql": "^11.7.1",
+    "@testcontainers/redis": "^11.7.2",
+    "@types/node": "^24.7.2",
+    "@types/pg": "^8.15.5",
+    "ioredis": "^5.8.2",
+    "pg": "^8.16.3",
+    "redlock": "^4.2.0",
+    "testcontainers": "^11.7.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
