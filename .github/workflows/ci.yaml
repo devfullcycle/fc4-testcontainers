@@ -1,0 +1,104 @@
+name: CI - Testcontainers
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    # temos o docker, mas os testes rodam foram de um container
+    test-without-docker:
+        name: Tests - Running Outside Container
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: "npm"
+                  cache-dependency-path: "./src/16-docker-outside-of-docker/package.json"
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Install dependencies
+              working-directory: ./src/16-docker-outside-of-docker
+              run: npm install
+
+            - name: Run tests - Container reuse without compose (outside container)
+              working-directory: ./src/16-docker-outside-of-docker
+              env:
+                  TESTCONTAINERS_RYUK_DISABLED: true
+              run: npm run test:without-compose
+
+            - name: Run tests - Container reuse with compose (outside container)
+              working-directory: ./src/16-docker-outside-of-docker
+              env:
+                  TESTCONTAINERS_RYUK_DISABLED: true
+              run: npm run test:with-compose
+    
+    test-inside-docker:
+        name: Tests - Running Inside Container (Docker-in-Docker)
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Create Docker config file
+              run: |
+                  mkdir -p ~/.docker
+                  echo '${{ secrets.DOCKER_CONFIG_JSON }}' > ~/.docker/config-read.json
+
+            - name: Get user and docker group IDs
+              id: get-ids
+              run: |
+                  echo "user_id=$(id -u)" >> $GITHUB_OUTPUT
+                  echo "docker_gid=$(getent group docker | cut -d: -f3)" >> $GITHUB_OUTPUT
+                  echo "Current user ID: $(id -u)"
+                  echo "Docker group ID: $(getent group docker | cut -d: -f3)"
+
+            # Setup Testcontainers Cloud Client right before your Testcontainers tests
+            - name: Setup Testcontainers Cloud Client
+              uses: atomicjar/testcontainers-cloud-setup-action@v1
+              with:
+                token: ${{ secrets.TC_CLOUD_TOKEN }}
+
+            - name: Start test container with docker compose
+              working-directory: ./src/16-docker-outside-of-docker
+              env:
+                  USER_ID: ${{ steps.get-ids.outputs.user_id }}
+                  DOCKER_GROUP_ID: ${{ steps.get-ids.outputs.docker_gid }}
+              run: docker compose -f compose.ci.yaml up -d
+
+            - name: Install dependencies inside container
+              working-directory: ./src/16-docker-outside-of-docker
+              run: docker compose -f compose.ci.yaml exec -T tests npm install
+            - name: Run tests - Container reuse without compose (inside container)
+              working-directory: ./src/16-docker-outside-of-docker
+              run: |
+                  docker compose -f compose.ci.yaml exec -T \
+                  -e TESTCONTAINERS_RYUK_DISABLED=true \
+                  -e DEBUG=testcontainers* \
+                  tests npm run test:without-compose
+
+            - name: Run tests - Container reuse with compose (inside container)
+              working-directory: ./src/16-docker-outside-of-docker
+              run: |
+                  docker compose -f compose.ci.yaml exec -T \
+                  -e TESTCONTAINERS_RYUK_DISABLED=true \
+                  tests npm run test:with-compose
+            
+            #Optional
+            - name: Terminate Testcontainers Cloud Client active sessions
+              uses: atomicjar/testcontainers-cloud-setup-action@v1
+              with:
+                action: terminate

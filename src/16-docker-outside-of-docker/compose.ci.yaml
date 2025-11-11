@@ -1,0 +1,10 @@
+
+services:
+
+  tests:
+    extends:
+      file: compose.yaml
+      service: tests
+    # Usa a network do host para permitir acesso ao Testcontainers Cloud Agent em localhost
+    network_mode: host
+    

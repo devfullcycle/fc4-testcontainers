@@ -1,0 +1,34 @@
+services:
+
+  tests:
+    build:
+      context: .
+      args:
+        DOCKER_GROUP_ID: ${DOCKER_GROUP_ID:-999}
+        USER_ID: ${USER_ID:-1000}
+    # Configurações necessárias para Testcontainers funcionar dentro de container:
+    # stop_signal: SIGKILL - envia sinal de término forçado (kill -9) ao invés de SIGTERM
+    #   Motivo: garante que o container de teste pare imediatamente junto com os containers criados pelo Testcontainers
+    #           em CI o container que executa os testes morre instantaneamente, tornando mais rápido o processo de finalização
+    stop_signal: SIGKILL
+    # stdin_open: true - mantém o STDIN (entrada padrão) aberto, equivalente ao flag -i do docker run
+    #   Motivo: necessário para o Testcontainers manter conexão com o Docker daemon
+    stdin_open: true
+    # tty: true - aloca um pseudo-terminal (TTY), equivalente ao flag -t do docker run
+    #   Motivo: necessário para o Testcontainers receber sinais do Docker daemon corretamente
+    tty: true
+    # stdin_open: true e tty: true juntos equivalem ao flag -it do docker exec -it....
+    volumes:
+      - .:/home/node/app
+      # pra dev container com a feature do dood, deixe esta linha comentada
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ~/.docker/config-read.json:/home/node/.docker/config.json:ro
+      # se está usando o testcontainers desktop, descomente a linha abaixo
+      - ~/.testcontainers.properties:/home/node/.testcontainers.properties:ro
+    environment:
+      # com docker compose é criado uma network bridge customizada, então o test não consegue comunicar com ryuk
+      # com docker run funciona normalmente pois usa a network default bridge
+      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
