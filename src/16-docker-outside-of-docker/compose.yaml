@@ -23,6 +23,8 @@ services:
       # pra dev container com a feature do dood, deixe esta linha comentada
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ~/.docker/config-read.json:/home/node/.docker/config.json:ro
+      # se está usando o testcontainers desktop, descomente a linha abaixo
+      #- ~/.testcontainers.properties:/home/node/.testcontainers.properties:ro
     environment:
       # com docker compose é criado uma network bridge customizada, então o test não consegue comunicar com ryuk
       # com docker run funciona normalmente pois usa a network default bridge
